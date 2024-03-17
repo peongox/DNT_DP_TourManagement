@@ -10,16 +10,20 @@ using System.Web.Mvc;
 using DAPM_TOURDL.Models;
 using ClosedXML.Excel;
 using System.Text.RegularExpressions;
+using DAPM_TOURDL.Patterns.Repository;
 
 namespace DAPM_TOURDL.Controllers
 {
     public class KHACHHANGsController : Controller
     {
-        private TourDLEntities db = new TourDLEntities();
-
+        private IKhachHangRepo repository;
+        public KHACHHANGsController()
+        {
+            this.repository = new KHACHHANGRepository(new TourDLEntities());
+        }
         public ActionResult ExportToExcel()
         {
-            var khS = db.KHACHHANGs;
+            var khS = repository.GetAllKHACHHANGs();
             //var khS = db.HOADONs.Include(h => h.KHACHHANG).Include(h => h.SPTOUR);
             using (var workbook = new XLWorkbook())
             {
@@ -57,7 +61,7 @@ namespace DAPM_TOURDL.Controllers
         // GET: KHACHHANGs
         public ActionResult Index(string SearchString)
         {
-            var kh = db.KHACHHANGs.ToList();
+            var kh = repository.GetAllKHACHHANGs();
             if (!string.IsNullOrEmpty(SearchString))
             {
                 kh = kh.Where(s => s.HoTen_KH.Contains(SearchString) || s.Mail_KH.Contains(SearchString)).ToList();
@@ -72,7 +76,7 @@ namespace DAPM_TOURDL.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            KHACHHANG kHACHHANG = db.KHACHHANGs.Find(id);
+            KHACHHANG kHACHHANG = repository.GetKHACHHANGById(id);
             if (kHACHHANG == null)
             {
                 return HttpNotFound();
@@ -94,12 +98,12 @@ namespace DAPM_TOURDL.Controllers
         public ActionResult Create([Bind(Include = "ID_KH,HoTen_KH,GioiTinh_KH,NgaySinh_KH,MatKhau,CCCD,SDT_KH,Mail_KH,Diem")] KHACHHANG kHACHHANG)
         {
             kHACHHANG.Diem = 0;
-            if (db.KHACHHANGs.Any(x => x.Mail_KH == kHACHHANG.Mail_KH) || db.NHANVIENs.Any(x => x.Mail_NV == kHACHHANG.Mail_KH))
+            if (repository.GetAllKHACHHANGs().Any(x => x.Mail_KH == kHACHHANG.Mail_KH) || repository.GetAllNHANVIENs().Any(x => x.Mail_NV == kHACHHANG.Mail_KH))
             {
                 ModelState.AddModelError("Mail_KH", "Email này đã tồn tại");
                 return View(kHACHHANG);
             }
-            if (db.KHACHHANGs.Any(x => x.CCCD == kHACHHANG.CCCD))
+            if (repository.GetAllKHACHHANGs().Any(x => x.CCCD == kHACHHANG.CCCD))
             {
                 ModelState.AddModelError("CCCD", "CCCD đã tồn tại");
             }
@@ -107,7 +111,7 @@ namespace DAPM_TOURDL.Controllers
             {
                 ModelState.AddModelError("CCCD", "CCCD không đúng 12 số");
             }
-            if (db.KHACHHANGs.Any(x=>x.SDT_KH == kHACHHANG.SDT_KH) || db.NHANVIENs.Any(x=>x.SDT_NV == kHACHHANG.SDT_KH))
+            if (repository.GetAllKHACHHANGs().Any(x=>x.SDT_KH == kHACHHANG.SDT_KH) || repository.GetAllNHANVIENs().Any(x=>x.SDT_NV == kHACHHANG.SDT_KH))
             {
                 ModelState.AddModelError("SDT_KH", "Số điện thoại đã tồn tại");
             }
@@ -126,8 +130,7 @@ namespace DAPM_TOURDL.Controllers
             }
             if (ModelState.IsValid)
             {
-                db.KHACHHANGs.Add(kHACHHANG);
-                db.SaveChanges();
+                repository.CreateKHACHHANG(kHACHHANG);
                 return RedirectToAction("Index");
             }
 
@@ -146,7 +149,7 @@ namespace DAPM_TOURDL.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            KHACHHANG kHACHHANG = db.KHACHHANGs.Find(id);
+            KHACHHANG kHACHHANG = repository.GetKHACHHANGById(id);
             if (kHACHHANG == null)
             {
                 return HttpNotFound();
@@ -162,14 +165,14 @@ namespace DAPM_TOURDL.Controllers
         public ActionResult Edit([Bind(Include = "ID_KH,HoTen_KH,GioiTinh_KH,NgaySinh_KH,MatKhau,CCCD,SDT_KH,Mail_KH,Diem")] KHACHHANG kHACHHANG)
         {
             // Check Mail
-            if (db.KHACHHANGs.Any(x => x.Mail_KH == kHACHHANG.Mail_KH && x.ID_KH != kHACHHANG.ID_KH) || db.NHANVIENs.Any(x => x.Mail_NV == kHACHHANG.Mail_KH))
+            if (repository.GetAllKHACHHANGs().Any(x => x.Mail_KH == kHACHHANG.Mail_KH && x.ID_KH != kHACHHANG.ID_KH) || repository.GetAllNHANVIENs().Any(x => x.Mail_NV == kHACHHANG.Mail_KH))
             {
                 ModelState.AddModelError("Mail_KH", "Email này đã tồn tại");
                 return View(kHACHHANG);
             }
 
             // Check CCCD
-            if (db.KHACHHANGs.Any(x => x.CCCD == kHACHHANG.CCCD && x.ID_KH != kHACHHANG.ID_KH))
+            if (repository.GetAllKHACHHANGs().Any(x => x.CCCD == kHACHHANG.CCCD && x.ID_KH != kHACHHANG.ID_KH))
             {
                 ModelState.AddModelError("CCCD", "CCCD đã tồn tại");
             }
@@ -179,7 +182,7 @@ namespace DAPM_TOURDL.Controllers
             }
             //
             // Check SĐT
-            if (db.KHACHHANGs.Any(x => x.SDT_KH == kHACHHANG.SDT_KH && x.ID_KH != kHACHHANG.ID_KH) || db.NHANVIENs.Any(x => x.SDT_NV == kHACHHANG.SDT_KH))
+            if (repository.GetAllKHACHHANGs().Any(x => x.SDT_KH == kHACHHANG.SDT_KH && x.ID_KH != kHACHHANG.ID_KH) || repository.GetAllNHANVIENs().Any(x => x.SDT_NV == kHACHHANG.SDT_KH))
             {
                 ModelState.AddModelError("SDT_KH", "Số điện thoại đã tồn tại");
             }
@@ -209,8 +212,7 @@ namespace DAPM_TOURDL.Controllers
             //
             if (ModelState.IsValid)
             {
-                db.Entry(kHACHHANG).State = EntityState.Modified;
-                db.SaveChanges();
+               repository.UpdateKHACHHANG(kHACHHANG);
                 return RedirectToAction("Index");
             }
             return View(kHACHHANG);
@@ -223,7 +225,7 @@ namespace DAPM_TOURDL.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            KHACHHANG kHACHHANG = db.KHACHHANGs.Find(id);
+            KHACHHANG kHACHHANG = repository.GetKHACHHANGById(id);
             if (kHACHHANG == null)
             {
                 return HttpNotFound();
@@ -236,9 +238,7 @@ namespace DAPM_TOURDL.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            KHACHHANG kHACHHANG = db.KHACHHANGs.Find(id);
-            db.KHACHHANGs.Remove(kHACHHANG);
-            db.SaveChanges();
+            repository.DeleteKHACHHANG(id);
             return RedirectToAction("Index");
         }
 
@@ -246,7 +246,7 @@ namespace DAPM_TOURDL.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                repository.Dispose();
             }
             base.Dispose(disposing);
         }
