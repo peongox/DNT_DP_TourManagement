@@ -19,7 +19,7 @@ namespace DAPM_TOURDL.Patterns.Repository
         {
             return db.KHACHHANGs.ToList();
         }
-        public IEnumerable<NHANVIEN> GetAllNhanViens()
+        public IEnumerable<NHANVIEN> GetAllNHANVIENs()
         {
             return db.NHANVIENs.ToList();
         }
