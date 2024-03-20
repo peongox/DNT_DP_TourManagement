@@ -108,6 +108,17 @@
             }
         </nav>
         <div class="inner">
+            <script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script>
+            <script src="~/signalr/hubs"></script>
+            <script>
+                $(function () {
+                    var notificationHub = $.connection.notificationHub;
+                    notificationHub.client.receiveNotification = function (message) {
+                        alert(message);
+                    };
+                    $.connection.hub.start();
+                });
+            </script>
             @RenderBody()
         </div>
     </div>
