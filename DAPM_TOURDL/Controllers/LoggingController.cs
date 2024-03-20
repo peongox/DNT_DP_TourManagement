@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using DAPM_TOURDL.Patterns.Proxy;
 
 namespace DAPM_TOURDL.Controllers
 {
-    public class LoggingController : Controller
+    public class LoggingController : Controller, IService
     {
         private TourDLEntities db = new TourDLEntities();
 
@@ -48,6 +49,11 @@ namespace DAPM_TOURDL.Controllers
         {
             Session.Abandon();
             return RedirectToAction("LoginAdmin", "Logging");
+        }
+
+        public void NavigateTo()
+        {
+            throw new NotImplementedException();
         }
     }
 }
