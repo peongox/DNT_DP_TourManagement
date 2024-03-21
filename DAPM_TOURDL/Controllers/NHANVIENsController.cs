@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using ClosedXML.Excel;
 using DAPM_TOURDL.Models;
+using DAPM_TOURDL.Patterns.Prototype;
 using Microsoft.AspNet.Identity;
 
 namespace DAPM_TOURDL.Controllers
@@ -83,7 +84,7 @@ namespace DAPM_TOURDL.Controllers
         // GET: NHANVIENs/Create
         public ActionResult Create()
         {
-            NHANVIEN nv = new NHANVIEN();
+            IPrototype nv = new NHANVIEN();
             return View(nv.Clone());
         }
 
