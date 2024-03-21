@@ -80,8 +80,6 @@
     height: auto;
     width: 100%;
     background-color: rgba(225,225,225,0.3);
-    -webkit-backdrop-filter: blur(3px);
-    backdrop-filter: blur(3px);
 }
 
 #logo span {

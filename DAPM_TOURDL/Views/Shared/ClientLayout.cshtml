@@ -18,10 +18,10 @@
 </head>
 <body>
     <!-- Navbar Start-->
-    <div class="loader">
+    <div class="loader" id="loader">
         <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExb253Y3Y3dnhnZnp1ZW9yNGJxYjZtNjh5YjBzZnNkejg1ZzkzNmpwZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/dYUslDahf6Uw71gH3t/giphy.gif" />
     </div>
-    <div class="div-navbar">
+    <div class="div-navbar" id="header">
         <nav class="navbar navbar-expand-lg" id="navbar">
             <div class="container">
                 <a class="navbar-brand" href="#" id="logo"></a>
@@ -143,23 +143,28 @@
     document.addEventListener("DOMContentLoaded", function () {
         // Đọc giá trị từ session
         var sessionBackgroundColor = '@Session["BackgroundColor_Client"]';
-
+        var sessionBackgroundColor_Header = '@Session["BackgroundColor_Client_Header"]';
         // Chọn thẻ <body> và đặt màu nền dựa trên giá trị của session
         document.body.style.backgroundColor = sessionBackgroundColor;
+        var header = document.getElementById("header");
+        header.style.backgroundColor = sessionBackgroundColor_Header;
+        document.getElementById("loader").style.backgroundColor = sessionBackgroundColor;
+
     });
 </script>
 <script>
     $(document).ready(function () {
-        var toggleValue = false;
         $('#toggleButton').click(function () {
             // Gửi một yêu cầu AJAX đến action "ChangeMode" trong TOURsController
             $.ajax({
                 url: '/SwitchColor/ChangeMode',
                 type: 'GET',
-                data: { isLightMode: toggleValue },
                 success: function (data) {
-                    toggleValue = data;
-                    document.body.style.backgroundColor = toggleValue;
+                    var toggleValue_Background = data.backgroundColor;
+                    var toggleValue_Header = data.header;
+                    document.body.style.backgroundColor = toggleValue_Background;
+                    document.getElementById("header").style.backgroundColor = toggleValue_Header;
+                    document.getElementById("loader").style.backgroundColor = toggleValue_Background;
                 }
             });
         });

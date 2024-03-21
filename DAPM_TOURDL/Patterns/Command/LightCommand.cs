@@ -12,9 +12,15 @@ namespace DAPM_TOURDL.Patterns.Command
         public ActionResult Execute(HttpSessionStateBase session)
         {
             session["BackgroundColor_CLient"] = "#ffffff";
+            session["BackgroundColor_Client_Header"] = "rgba(225,225,225,0.3)";
+            var data = new
+            {
+                backgroundColor = session["BackgroundColor_CLient"],
+                header = session["BackgroundColor_Client_Header"]
+            };
             return new JsonResult
             {
-                Data = session["BackgroundColor_Client"],
+                Data = data,
                 JsonRequestBehavior = JsonRequestBehavior.AllowGet
             };
         }

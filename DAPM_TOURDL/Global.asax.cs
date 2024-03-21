@@ -15,6 +15,7 @@ namespace DAPM_TOURDL
         protected void Session_Start(object sender, EventArgs e)
         {
             HttpContext.Current.Session["BackgroundColor_Client"] = "#ffffff";
+            HttpContext.Current.Session["BackgroundColor_Client_Header"] = "rgba(225,225,225,0.3)";
         }
         protected void Application_Start()
         {
