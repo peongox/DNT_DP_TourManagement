@@ -1,8 +1,10 @@
 using DAPM_TOURDL.Models;
 using DAPM_TOURDL.Models.Payments;
+using DAPM_TOURDL.Patterns.Observer;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.EMMA;
+using Microsoft.AspNet.SignalR;
 using Microsoft.Owin.Security.OAuth;
 using PagedList;
 using System;
@@ -19,7 +21,9 @@ namespace DAPM_TOURDL.Controllers
     public class HomeController : Controller
     {
         private TourDLEntities db = new TourDLEntities();
-        //https://localhost:44385/
+        private HoaDonSubject hoaDonSubject = new HoaDonSubject();
+        private AdminObserver _admin = new AdminObserver();
+        private readonly IHubContext _hubContext=  GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
 
         public ActionResult Index()
         {
@@ -438,6 +442,7 @@ namespace DAPM_TOURDL.Controllers
         public ActionResult DatTour(FormCollection form, string id)
         {
             HOADON hOADON = new HOADON();
+            hoaDonSubject.Attach(_admin);
             var sptour = db.SPTOURs.FirstOrDefault(s => s.ID_SPTour == id);
             if (Session["IDUser"] == null)
             {
@@ -487,13 +492,17 @@ namespace DAPM_TOURDL.Controllers
                     int VAT = (int)(tongtien * 0.05);
                     hOADON.TongTienTour = tongtien;
                     hOADON.TienPhaiTra = tongtien - tienkhuyenmai + VAT;
-
                     SoLuongSPTOUR -= soluong;
                     sptour.SoNguoi = SoLuongSPTOUR;
                     db.Entry(sptour).State = EntityState.Modified;
                     db.HOADONs.Add(hOADON);
                     db.SaveChanges();
                     var url = UrlPayment(hOADON.ID_HoaDon);
+                    // hoaDonSubject.Notify("Có đơn đặt mới");
+                    var user = Session["UsernameSS"].ToString();
+                    var tourdat = sptour.TenSPTour.ToString();
+                    _hubContext.Clients.All.receiveNotification($" {user} vừa đặt tour {tourdat} thành công");
+                    //_hubContext.Clients.All.SendNotification("Có đơn đặt mới");
                     RedirectToAction("UrlPayment", "Home", new { orderCode = hOADON.ID_HoaDon });
                 }
             }
