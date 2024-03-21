@@ -4,23 +4,24 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title</title>
-    <link type="image/svg" rel="icon" href="~/Images/logo3.jpg"/>
+    <link type="image/svg" rel="icon" href="~/Images/logo3.jpg" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="~/CSS/Client/CientLayout.css" />
     @*bootstrap*@
     @*bootstrap*@
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
     <script src="~/Scripts/bootstrap.bundle.min.js"></script>
     <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 </head>
 <body>
     <!-- Navbar Start-->
-    <div class="loader">
+    <div class="loader" id="loader">
         <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExb253Y3Y3dnhnZnp1ZW9yNGJxYjZtNjh5YjBzZnNkejg1ZzkzNmpwZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/dYUslDahf6Uw71gH3t/giphy.gif" />
     </div>
-    <div class="div-navbar">
+    <div class="div-navbar" id="header">
         <nav class="navbar navbar-expand-lg" id="navbar">
             <div class="container">
                 <a class="navbar-brand" href="#" id="logo"></a>
@@ -40,6 +41,9 @@
                         </li>
                         <li class="nav-item">
                             @Html.ActionLink("Về chúng tôi", "About", "Home", null, new { @class = "nav-link" })
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="toggleButton">Đổi màu</a>
                         </li>
                     </ul>
                     <ul class="navbar-nav ms-auto">
@@ -135,3 +139,34 @@
     @RenderSection("Validation", false)
 </body>
 </html>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Đọc giá trị từ session
+        var sessionBackgroundColor = '@Session["BackgroundColor_Client"]';
+        var sessionBackgroundColor_Header = '@Session["BackgroundColor_Client_Header"]';
+        // Chọn thẻ <body> và đặt màu nền dựa trên giá trị của session
+        document.body.style.backgroundColor = sessionBackgroundColor;
+        var header = document.getElementById("header");
+        header.style.backgroundColor = sessionBackgroundColor_Header;
+        document.getElementById("loader").style.backgroundColor = sessionBackgroundColor;
+
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#toggleButton').click(function () {
+            // Gửi một yêu cầu AJAX đến action "ChangeMode" trong TOURsController
+            $.ajax({
+                url: '/SwitchColor/ChangeMode',
+                type: 'GET',
+                success: function (data) {
+                    var toggleValue_Background = data.backgroundColor;
+                    var toggleValue_Header = data.header;
+                    document.body.style.backgroundColor = toggleValue_Background;
+                    document.getElementById("header").style.backgroundColor = toggleValue_Header;
+                    document.getElementById("loader").style.backgroundColor = toggleValue_Background;
+                }
+            });
+        });
+    });
+</script>
