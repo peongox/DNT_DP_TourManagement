@@ -98,7 +98,7 @@ namespace DAPM_TOURDL.Controllers
         public ActionResult Create([Bind(Include = "ID_KH,HoTen_KH,GioiTinh_KH,NgaySinh_KH,MatKhau,CCCD,SDT_KH,Mail_KH,Diem")] KHACHHANG kHACHHANG)
         {
             kHACHHANG.Diem = 0;
-            if (repository.GetAllKHACHHANGs().Any(x => x.Mail_KH == kHACHHANG.Mail_KH) || repository.GetAllNHANVIENs().Any(x => x.Mail_NV == kHACHHANG.Mail_KH))
+            if (repository.GetAllKHACHHANGs().Any(x => x.Mail_KH == kHACHHANG.Mail_KH) || repository.GetAllNhanViens().Any(x => x.Mail_NV == kHACHHANG.Mail_KH))
             {
                 ModelState.AddModelError("Mail_KH", "Email này đã tồn tại");
                 return View(kHACHHANG);
@@ -111,7 +111,7 @@ namespace DAPM_TOURDL.Controllers
             {
                 ModelState.AddModelError("CCCD", "CCCD không đúng 12 số");
             }
-            if (repository.GetAllKHACHHANGs().Any(x=>x.SDT_KH == kHACHHANG.SDT_KH) || repository.GetAllNHANVIENs().Any(x=>x.SDT_NV == kHACHHANG.SDT_KH))
+            if (repository.GetAllKHACHHANGs().Any(x=>x.SDT_KH == kHACHHANG.SDT_KH) || repository.GetAllNhanViens().Any(x=>x.SDT_NV == kHACHHANG.SDT_KH))
             {
                 ModelState.AddModelError("SDT_KH", "Số điện thoại đã tồn tại");
             }
@@ -165,7 +165,7 @@ namespace DAPM_TOURDL.Controllers
         public ActionResult Edit([Bind(Include = "ID_KH,HoTen_KH,GioiTinh_KH,NgaySinh_KH,MatKhau,CCCD,SDT_KH,Mail_KH,Diem")] KHACHHANG kHACHHANG)
         {
             // Check Mail
-            if (repository.GetAllKHACHHANGs().Any(x => x.Mail_KH == kHACHHANG.Mail_KH && x.ID_KH != kHACHHANG.ID_KH) || repository.GetAllNHANVIENs().Any(x => x.Mail_NV == kHACHHANG.Mail_KH))
+            if (repository.GetAllKHACHHANGs().Any(x => x.Mail_KH == kHACHHANG.Mail_KH && x.ID_KH != kHACHHANG.ID_KH) || repository.GetAllNhanViens().Any(x => x.Mail_NV == kHACHHANG.Mail_KH))
             {
                 ModelState.AddModelError("Mail_KH", "Email này đã tồn tại");
                 return View(kHACHHANG);
@@ -182,7 +182,7 @@ namespace DAPM_TOURDL.Controllers
             }
             //
             // Check SĐT
-            if (repository.GetAllKHACHHANGs().Any(x => x.SDT_KH == kHACHHANG.SDT_KH && x.ID_KH != kHACHHANG.ID_KH) || repository.GetAllNHANVIENs().Any(x => x.SDT_NV == kHACHHANG.SDT_KH))
+            if (repository.GetAllKHACHHANGs().Any(x => x.SDT_KH == kHACHHANG.SDT_KH && x.ID_KH != kHACHHANG.ID_KH) || repository.GetAllNhanViens().Any(x => x.SDT_NV == kHACHHANG.SDT_KH))
             {
                 ModelState.AddModelError("SDT_KH", "Số điện thoại đã tồn tại");
             }
