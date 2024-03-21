@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using DAPM_TOURDL.Patterns.Proxy;
 
 namespace DAPM_TOURDL.Controllers
 {
@@ -31,7 +32,7 @@ namespace DAPM_TOURDL.Controllers
             if (check == null)
             {
                 ViewBag.Notification = "Tài khoản và mật khẩu không đúng";
-                return View("Index", "HomeController");
+                return RedirectToAction("Index", "HomeController");
             }
             else
             {
@@ -48,6 +49,11 @@ namespace DAPM_TOURDL.Controllers
         {
             Session.Abandon();
             return RedirectToAction("LoginAdmin", "Logging");
+        }
+
+        public void NavigateTo()
+        {
+            throw new NotImplementedException();
         }
     }
 }

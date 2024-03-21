@@ -10,7 +10,7 @@ namespace DAPM_TOURDL.Patterns.Repository
     internal interface IKhachHangRepo :IDisposable
     {
         IEnumerable<KHACHHANG> GetAllKHACHHANGs();
-        IEnumerable<NHANVIEN> GetAllNHANVIENs();
+        IEnumerable<NHANVIEN> GetAllNhanViens();
         KHACHHANG GetKHACHHANGById(int? id);
         IEnumerable<KHACHHANG> SearchKHACHHANGs(string searchString);
         void CreateKHACHHANG(KHACHHANG kHACHHANG);

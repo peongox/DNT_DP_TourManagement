@@ -1,8 +1,10 @@
 using DAPM_TOURDL.Models;
 using DAPM_TOURDL.Models.Payments;
+using DAPM_TOURDL.Patterns.Observer;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.EMMA;
+using Microsoft.AspNet.SignalR;
 using Microsoft.Owin.Security.OAuth;
 using PagedList;
 using System;
@@ -13,13 +15,19 @@ using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
+using DAPM_TOURDL.Patterns.Proxy;
+using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace DAPM_TOURDL.Controllers
 {
     public class HomeController : Controller
     {
+        private User user;
         private TourDLEntities db = new TourDLEntities();
-        //https://localhost:44385/
+        private HoaDonSubject hoaDonSubject = new HoaDonSubject();
+        private AdminObserver _admin = new AdminObserver();
+        private readonly IHubContext _hubContext=  GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
 
         public ActionResult Index()
         {
@@ -139,29 +147,42 @@ namespace DAPM_TOURDL.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DangNhap(KHACHHANG khachhang)
         {
-            var kiemTraDangNhap = db.KHACHHANGs.Where(x => x.Mail_KH.Equals(khachhang.Mail_KH) && x.MatKhau.Equals(khachhang.MatKhau)).FirstOrDefault();
-
-            if (kiemTraDangNhap != null)
-            {
-                Session["UsernameSS"] = kiemTraDangNhap.HoTen_KH.ToString();
-                Session["IDUser"] = kiemTraDangNhap.ID_KH;
-                // Kiểm tra xem có thông tin tour trong Session không
-                if (Session["TourInfo"] != null)
-                {
-                    var tour = Session["TourInfo"];
-                    Session.Remove("TourInfo");
-
-                    return RedirectToAction("DatTour", new { id = tour });
-                }
-
-                return RedirectToAction("HomePage", "Home", new { id = kiemTraDangNhap.ID_KH });
-            }
-            else
-            {
-                ModelState.AddModelError("MatKhau", "Thông tin đăng nhập không hợp lệ");
-            }
+            user = new User(khachhang.Mail_KH, khachhang.MatKhau);
+            ProtectionProxy authen = new ProtectionProxy(user, db);
+            return authen.NavigateTo(Session);
             
-            return View("LoginAndRegister");
+
+           // var kiemTraDangNhap = db.KHACHHANGs.Where(x => x.Mail_KH.Equals(khachhang.Mail_KH) && x.MatKhau.Equals(khachhang.MatKhau)).FirstOrDefault();
+            
+            //if (result != null)
+            //{
+            //if (result is KHACHHANG)
+            //{
+            //    var kh = (KHACHHANG)result;
+            //    Session["UsernameSS"] = kh.HoTen_KH.ToString();
+            //    Session["IDUser"] = kh.ID_KH;
+            //    // Kiểm tra xem có thông tin tour trong Session không
+            //    if (Session["TourInfo"] != null)
+            //    {
+            //        var tour = Session["TourInfo"];
+            //        Session.Remove("TourInfo");
+
+            //        return RedirectToAction("DatTour", new { id = tour });
+            //    }
+
+            //    return RedirectToAction("HomePage", "Home", new { id = kh.ID_KH });
+            //}
+            //    else if (result is NHANVIEN)
+            //    {
+            //        var nv = (NHANVIEN)result;
+            //        return RedirectToAction("LoginAdmin", "Logging");
+            //    }
+            //}
+            //else
+            //{
+            //    ModelState.AddModelError("MatKhau", "Thông tin đăng nhập không hợp lệ");
+            //}
+            //return View("LoginAndRegister");
         }
 
         public ActionResult DangXuat()
@@ -438,6 +459,7 @@ namespace DAPM_TOURDL.Controllers
         public ActionResult DatTour(FormCollection form, string id)
         {
             HOADON hOADON = new HOADON();
+            hoaDonSubject.Attach(_admin);
             var sptour = db.SPTOURs.FirstOrDefault(s => s.ID_SPTour == id);
             if (Session["IDUser"] == null)
             {
@@ -487,13 +509,17 @@ namespace DAPM_TOURDL.Controllers
                     int VAT = (int)(tongtien * 0.05);
                     hOADON.TongTienTour = tongtien;
                     hOADON.TienPhaiTra = tongtien - tienkhuyenmai + VAT;
-
                     SoLuongSPTOUR -= soluong;
                     sptour.SoNguoi = SoLuongSPTOUR;
                     db.Entry(sptour).State = EntityState.Modified;
                     db.HOADONs.Add(hOADON);
                     db.SaveChanges();
                     var url = UrlPayment(hOADON.ID_HoaDon);
+                    // hoaDonSubject.Notify("Có đơn đặt mới");
+                    var user = Session["UsernameSS"].ToString();
+                    var tourdat = sptour.TenSPTour.ToString();
+                    _hubContext.Clients.All.receiveNotification($" {user} vừa đặt tour {tourdat} thành công");
+                    //_hubContext.Clients.All.SendNotification("Có đơn đặt mới");
                     RedirectToAction("UrlPayment", "Home", new { orderCode = hOADON.ID_HoaDon });
                 }
             }

@@ -23,7 +23,6 @@ namespace DAPM_TOURDL.Patterns.Repository
         {
             return db.NHANVIENs.ToList();
         }
-
         public KHACHHANG GetKHACHHANGById(int? id)
         {
             return db.KHACHHANGs.Find(id);
@@ -57,5 +56,7 @@ namespace DAPM_TOURDL.Patterns.Repository
         {
             db.Dispose();
         }
+
+       
     }
 }
