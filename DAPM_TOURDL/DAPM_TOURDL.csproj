@@ -353,6 +353,11 @@
     </Compile>
     <Compile Include="Patterns\Repository\IKhachHangRepo.cs" />
     <Compile Include="Patterns\Repository\KHACHHANGRepository.cs" />
+    <Compile Include="Patterns\Strategy\AllStrategy.cs" />
+    <Compile Include="Patterns\Strategy\ITourSearch.cs" />
+    <Compile Include="Patterns\Strategy\NameStrategy.cs" />
+    <Compile Include="Patterns\Strategy\PriceStrategy.cs" />
+    <Compile Include="Patterns\Strategy\StrategyMethod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>

@@ -6,6 +6,7 @@ using DocumentFormat.OpenXml.EMMA;
 using Microsoft.Owin.Security.OAuth;
 using PagedList;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Entity;
 using System.Globalization;
@@ -27,7 +28,7 @@ namespace DAPM_TOURDL.Controllers
         }
         public ActionResult LoginAndRegister()
         {
-            if(TempData["Mes"] != null)
+            if (TempData["Mes"] != null)
             {
                 ViewBag.Mes = TempData["Mes"];
             }
@@ -119,7 +120,7 @@ namespace DAPM_TOURDL.Controllers
                 TempData["Mes"] = "Đăng ký thành công";
                 //return RedirectToAction("LoginAndRegister", "Home");
                 return RedirectToAction("LoginAndRegister");
-            }   
+            }
             return View("RegisterAndLogin");
         }
 
@@ -160,7 +161,7 @@ namespace DAPM_TOURDL.Controllers
             {
                 ModelState.AddModelError("MatKhau", "Thông tin đăng nhập không hợp lệ");
             }
-            
+
             return View("LoginAndRegister");
         }
 
@@ -250,18 +251,18 @@ namespace DAPM_TOURDL.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DoiMatKhau(int id,string currentPassword, string newPassword, string confirmPassword)
+        public ActionResult DoiMatKhau(int id, string currentPassword, string newPassword, string confirmPassword)
         {
             var data = db.KHACHHANGs.Find(id);
-            if(currentPassword != data.MatKhau)
+            if (currentPassword != data.MatKhau)
             {
                 ModelState.AddModelError("currentPassword", "Mật khẩu hiện tại không chính xác");
             }
-            if(currentPassword == newPassword)
+            if (currentPassword == newPassword)
             {
                 ModelState.AddModelError("newPassword", "Vui lòng đổi mật khẩu mới không, đổi lại mật khẩu cũ");
             }
-            if(newPassword != confirmPassword)
+            if (newPassword != confirmPassword)
             {
                 ModelState.AddModelError("confirmPassword", "Mật khẩu xác nhận không trùng khớp");
             }
@@ -282,12 +283,12 @@ namespace DAPM_TOURDL.Controllers
                 db.SaveChanges();
                 TempData["SuccessMessage"] = "Đổi mật khẩu thành công";
                 return RedirectToAction("ThongTinCaNhan", "Home", new { id = data.ID_KH });
-            } 
+            }
         }
         public ActionResult LichSuDatTour(int id)
         {
             var data = db.HOADONs.Where(t => t.ID_KH == id).ToList();
-            if(data.Count == 0)
+            if (data.Count == 0)
             {
                 ViewBag.Mes = "Bạn chưa đặt tour nào cả";
             }
@@ -314,7 +315,7 @@ namespace DAPM_TOURDL.Controllers
             TempData["SuccessMessage"] = "Hủy tour thành công";
             return RedirectToAction("LichSuDatTour", new { id = Session["IDUser"] });
         }
-        
+
 
         public ActionResult ThanhToanMomo(int id)
         {
@@ -425,7 +426,7 @@ namespace DAPM_TOURDL.Controllers
             {
                 int idUser = (int)Session["IDUser"];
                 var user = db.KHACHHANGs.FirstOrDefault(u => u.ID_KH == idUser);
-                ViewBag.KhachHang = user;   
+                ViewBag.KhachHang = user;
             }
             else if (data.SoNguoi <= 0)
             {
@@ -474,7 +475,7 @@ namespace DAPM_TOURDL.Controllers
                 }
                 else
                 {
-                    if(KHang.Diem != null)
+                    if (KHang.Diem != null)
                     {
                         hOADON.TienKhuyenMai = (int)(KHang.Diem * 0.05);
                     }
@@ -513,9 +514,9 @@ namespace DAPM_TOURDL.Controllers
 
             page = page < 1 ? 1 : page;/////
             int pageSize = 9;/////////
-            var tours = from t in db.SPTOURs select t;
+            /*var tours = from t in db.SPTOURs select t;*/
 
-            if (!string.IsNullOrEmpty(name))
+            /*if (!string.IsNullOrEmpty(name))
             {
                 tours = tours.Where(x => x.TenSPTour.Contains(name));
                 if (to != null)
@@ -544,9 +545,15 @@ namespace DAPM_TOURDL.Controllers
                         tours = tours.Where(x => x.GiaNguoiLon <= from);
                     }
                 }
-            }
+            }*/
+
+            var tours = db.SPTOURs.ToList();
+            // Khai báo Strategy chung
+            StrategyMethod _strategy = new StrategyMethod();
+            _strategy.SetStrategy(new AllStrategy());
+            tours = _strategy.FilterTours(tours, name, to, from);
             //sắp xếp theo giá tiền
-            tours = tours.OrderBy(item => item.GiaNguoiLon);
+            tours = tours.OrderBy(item => item.GiaNguoiLon).ToList();
 
             //kiểm tra để thông báo lỗi
             if (tours.Count() == 0)
