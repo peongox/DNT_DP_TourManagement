@@ -31,7 +31,7 @@ namespace DAPM_TOURDL.Controllers
             if (check == null)
             {
                 ViewBag.Notification = "Tài khoản và mật khẩu không đúng";
-                return View("Index", "HomeController");
+                return RedirectToAction("Index", "HomeController");
             }
             else
             {

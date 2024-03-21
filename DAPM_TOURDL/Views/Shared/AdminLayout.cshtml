@@ -10,6 +10,7 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
 </head>
 <body>
     <div class="sidebar">
@@ -108,13 +109,20 @@
             }
         </nav>
         <div class="inner">
+            <script src="/lib/jquery/dist/jquery.js"></script>
+            <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+            <script type="text/javascript">
+                toastr.success("Đăng nhập thành công");
+            </script>
             <script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script>
             <script src="~/signalr/hubs"></script>
-            <script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+            <script type="text/javascript">
                 $(function () {
                     var notificationHub = $.connection.notificationHub;
                     notificationHub.client.receiveNotification = function (message) {
-                        alert(message);
+                        //alert(message);
+                        toastr.success(message);
                     };
                     $.connection.hub.start();
                 });
