@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using ClosedXML.Excel;
 using DAPM_TOURDL.Models;
+using DAPM_TOURDL.Patterns.Prototype;
 using Microsoft.AspNet.Identity;
 
 namespace DAPM_TOURDL.Controllers
@@ -83,7 +84,8 @@ namespace DAPM_TOURDL.Controllers
         // GET: NHANVIENs/Create
         public ActionResult Create()
         {
-            return View();
+            IPrototype nv = new NHANVIEN();
+            return View(nv.Clone());
         }
 
         // POST: NHANVIENs/Create
@@ -91,7 +93,6 @@ namespace DAPM_TOURDL.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public ActionResult Create([Bind(Include = "ID_NV,HoTen_NV,GioiTinh_NV,NgaySinh_NV,MatKhau,Mail_NV,ChucVu,SDT_NV")] NHANVIEN nHANVIEN)
         {
             if(db.NHANVIENs.Any(x=>x.SDT_NV == nHANVIEN.SDT_NV) || db.KHACHHANGs.Any(x=>x.SDT_KH == nHANVIEN.SDT_NV))
@@ -171,7 +172,6 @@ namespace DAPM_TOURDL.Controllers
         // POST: NHANVIENs/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public ActionResult DeleteConfirmed(int id)
         {
             NHANVIEN nHANVIEN = db.NHANVIENs.Find(id);
