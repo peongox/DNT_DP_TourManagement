@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace DAPM_TOURDL.Patterns.Prototype
 {
-    internal interface IPrototype
+    public interface IPrototype
     {
-        NHANVIEN Clone();
+        IPrototype Clone();
     }
 }
