@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
 
 namespace DAPM_TOURDL.Patterns.Proxy
 {
     internal interface IService
     {
-        void NavigateTo();
+        ActionResult NavigateTo(HttpSessionStateBase S);
     }
 }

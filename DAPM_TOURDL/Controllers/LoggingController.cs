@@ -8,7 +8,7 @@ using DAPM_TOURDL.Patterns.Proxy;
 
 namespace DAPM_TOURDL.Controllers
 {
-    public class LoggingController : Controller, IService
+    public class LoggingController : Controller
     {
         private TourDLEntities db = new TourDLEntities();
 

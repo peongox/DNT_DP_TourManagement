@@ -353,6 +353,7 @@
     </Compile>
     <Compile Include="Patterns\Proxy\IService.cs" />
     <Compile Include="Patterns\Proxy\ProtectionProxy.cs" />
+    <Compile Include="Patterns\Proxy\Service.cs" />
     <Compile Include="Patterns\Proxy\User.cs" />
     <Compile Include="Patterns\Repository\IKhachHangRepo.cs" />
     <Compile Include="Patterns\Repository\KHACHHANGRepository.cs" />
