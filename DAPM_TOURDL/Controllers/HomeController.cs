@@ -15,11 +15,15 @@ using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
+using DAPM_TOURDL.Patterns.Proxy;
+using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace DAPM_TOURDL.Controllers
 {
     public class HomeController : Controller
     {
+        private User user;
         private TourDLEntities db = new TourDLEntities();
         private HoaDonSubject hoaDonSubject = new HoaDonSubject();
         private AdminObserver _admin = new AdminObserver();
@@ -143,29 +147,42 @@ namespace DAPM_TOURDL.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DangNhap(KHACHHANG khachhang)
         {
-            var kiemTraDangNhap = db.KHACHHANGs.Where(x => x.Mail_KH.Equals(khachhang.Mail_KH) && x.MatKhau.Equals(khachhang.MatKhau)).FirstOrDefault();
-
-            if (kiemTraDangNhap != null)
-            {
-                Session["UsernameSS"] = kiemTraDangNhap.HoTen_KH.ToString();
-                Session["IDUser"] = kiemTraDangNhap.ID_KH;
-                // Kiểm tra xem có thông tin tour trong Session không
-                if (Session["TourInfo"] != null)
-                {
-                    var tour = Session["TourInfo"];
-                    Session.Remove("TourInfo");
-
-                    return RedirectToAction("DatTour", new { id = tour });
-                }
-
-                return RedirectToAction("HomePage", "Home", new { id = kiemTraDangNhap.ID_KH });
-            }
-            else
-            {
-                ModelState.AddModelError("MatKhau", "Thông tin đăng nhập không hợp lệ");
-            }
+            user = new User(khachhang.Mail_KH, khachhang.MatKhau);
+            ProtectionProxy authen = new ProtectionProxy(user, db);
+            return authen.NavigateTo(Session);
             
-            return View("LoginAndRegister");
+
+           // var kiemTraDangNhap = db.KHACHHANGs.Where(x => x.Mail_KH.Equals(khachhang.Mail_KH) && x.MatKhau.Equals(khachhang.MatKhau)).FirstOrDefault();
+            
+            //if (result != null)
+            //{
+            //if (result is KHACHHANG)
+            //{
+            //    var kh = (KHACHHANG)result;
+            //    Session["UsernameSS"] = kh.HoTen_KH.ToString();
+            //    Session["IDUser"] = kh.ID_KH;
+            //    // Kiểm tra xem có thông tin tour trong Session không
+            //    if (Session["TourInfo"] != null)
+            //    {
+            //        var tour = Session["TourInfo"];
+            //        Session.Remove("TourInfo");
+
+            //        return RedirectToAction("DatTour", new { id = tour });
+            //    }
+
+            //    return RedirectToAction("HomePage", "Home", new { id = kh.ID_KH });
+            //}
+            //    else if (result is NHANVIEN)
+            //    {
+            //        var nv = (NHANVIEN)result;
+            //        return RedirectToAction("LoginAdmin", "Logging");
+            //    }
+            //}
+            //else
+            //{
+            //    ModelState.AddModelError("MatKhau", "Thông tin đăng nhập không hợp lệ");
+            //}
+            //return View("LoginAndRegister");
         }
 
         public ActionResult DangXuat()

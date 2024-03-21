@@ -357,6 +357,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>TOURDL.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Patterns\Proxy\IService.cs" />
+    <Compile Include="Patterns\Proxy\ProtectionProxy.cs" />
+    <Compile Include="Patterns\Proxy\Service.cs" />
+    <Compile Include="Patterns\Proxy\User.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Patterns\Observer\AdminObserver.cs" />
     <Compile Include="Patterns\Observer\HoaDonSubject.cs" />
